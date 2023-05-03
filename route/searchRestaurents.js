@@ -2,7 +2,7 @@ const express = require('express')
 
 
 const {
-    getRestaurentByBudget
+    showCombos
 } = require('../controller/restaurentselectController')
 
 
@@ -11,7 +11,7 @@ const searchRouter = express.Router()
 
 
 // Search Restaurents
-searchRouter.get('/searchrestaurant',getRestaurentByBudget)
+searchRouter.get('/searchrestaurant',showCombos)
 
 
 
