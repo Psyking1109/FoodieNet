@@ -1,10 +1,10 @@
-const Restaurent = require('../models/restaurentData');
+const Restaurant = require('../models/restaurentData');
 
 async function showCombos(req, res) {
   const { budget, people } = req.body;
 
   try {
-    const restaurants = await Restaurent.find().lean();
+    const restaurants = await Restaurant.find().lean();
 
     const combos = [];
     for (const restaurant of restaurants) {
@@ -39,9 +39,9 @@ async function showCombos(req, res) {
             const beverages = restaurant.menu.filter(item => item.type === 'beverage');
 
             const itemTypeLimits = {
-              Main_course: 1,
-              sidedish: 1,
-              setmenu: people < 2 ? 1 : 0,
+              Main_course: people,
+              sidedish: people,
+              setmenu: Math.ceil(people/2),
               starter: people,
               desert: people,
               beverage: people
@@ -72,11 +72,17 @@ async function showCombos(req, res) {
             }
 
             combo.items = combo.items.concat(selectedItems.slice(0, 2 * people - combo.items.length));
+            combo.totalPrice += selectedItems.slice(0, 2 * people - combo.items.length).reduce((acc, item) => acc + item.price, 0);
             combos.push(combo);
           }
         }
       }
     }
+
+    combos.forEach(combo => {
+      combo.totalPrice = combo.items.reduce((total, item) => total + item.price, 0);
+      combo.itemType = combo.items.map(item => item.type);
+    });
 
     res.json(combos);
   } catch (err) {
