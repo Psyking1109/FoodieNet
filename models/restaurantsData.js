@@ -39,6 +39,14 @@ const RestaurentSchema = new Schema({
             type:Number,
             required:true
         }
+    }],
+    review:[{
+        comment:{
+            type:String
+        },
+        UserID:{
+            type:mongoose.Schema.Types.ObjectId
+        }
     }]
 
 })

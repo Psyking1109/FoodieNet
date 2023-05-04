@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const restaurentData = require('../models/restaurentData')
+const restaurentData = require('../models/restaurantsData')
 
 
 const CreateMenu = async(req,res)=>{

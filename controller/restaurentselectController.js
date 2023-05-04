@@ -1,4 +1,6 @@
-const Restaurant = require('../models/restaurentData');
+const { json } = require('express');
+const Restaurant = require('../models/restaurantsData');
+const jwt = require('jsonwebtoken')
 
 async function showCombos(req, res) {
   const { budget, people } = req.body;
@@ -91,6 +93,42 @@ async function showCombos(req, res) {
   }
 }
 
+
+const reviews = async(req,res) =>{
+
+  let commentString = await req.body.comment
+
+  const authHeader = req.headers['authorization'];
+
+const token = authHeader && authHeader.split(' ')[1]
+const decodedToken = jwt.decode(token,'secretKey');
+
+//console.log("token Value - ",decodedToken.username)
+
+  let newComment = { $push: {review:[{
+    comment:commentString,
+    UserID:decodedToken.username
+  }]} }
+  //const options = { "upsert": false };
+  await Restaurant.updateOne({ _id: req.params.id }, newComment)
+    .then(result => {
+      const { matchedCount, modifiedCount } = result;
+      if (matchedCount && modifiedCount) {
+        console.log(`Successfully added a new review.`)
+        res.status(200).json(result)
+      }
+    })
+    .catch(err => console.error(`Failed to add review: ${err}`))
+
+    const rests = await Restaurant.findById({_id:req.params.id})
+
+console.log(JSON.stringify(rests , null , 2))
+
+ res.status(500)
+}
+
+
 module.exports = {
-  showCombos
+  showCombos,
+  reviews
 };

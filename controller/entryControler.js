@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const Users = require('../models/registeruserData')
-const Restaurants = require('../models/restaurentData')
+const Restaurants = require('../models/restaurantsData')
 
 //Register
 const registerUser = (req,res) =>{
