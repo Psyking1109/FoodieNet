@@ -21,8 +21,10 @@ const registerUser = (req,res) =>{
             })
             await Register.save()
 
-            if(user.role == 'Restaurent'){          
+            if(user.role == 'Restaurent'){ 
+              const userId = Users.findOne({'emailId':user.emailId})       
               const Restaurant = new Restaurants({
+                userID:userId,
                 contacts:{
                   emailId:user.emailId
                 },
@@ -55,7 +57,6 @@ const login = async (req, res) => {
     if (!result) {
       return res.status(401).send({ message: 'Invalid username or password' });
     }
-  
 
     const payload = { username: user._id, role: user.role};
     const token = jwt.sign(payload, 'secretKey');

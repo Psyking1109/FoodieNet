@@ -2,6 +2,9 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema
 const RestaurentSchema = new Schema({
+    userID:{
+        type:mongoose.Schema.Types.ObjectId
+    },
     restaurentName:{
         type:String,
         required:true
@@ -47,7 +50,22 @@ const RestaurentSchema = new Schema({
         UserID:{
             type:mongoose.Schema.Types.ObjectId
         }
-    }]
+    }],
+    reservations:[{
+        customer:{
+            type:mongoose.Schema.Types.ObjectId
+        },
+        numberofPeople:{
+            type:Number
+        },
+        reservationDate:{
+            type:Date
+        },
+        status:{
+            type:String,
+            emun:['copmleted','canceled','pending','rejected']
+        }
+    }],
 
 })
 

@@ -32,8 +32,9 @@ async function showCombos(req, res) {
             itemType: ['Main_course', 'sidedish'],
             totalPrice: mainCourse.price + sideDish.price
           };
-
+         
           let remainingBudget = budget - combo.totalPrice;
+          //console.log(remainingBudget)
 
           if (remainingBudget > 0) {
             const starters = restaurant.menu.filter(item => item.type === 'starter');
@@ -64,6 +65,7 @@ async function showCombos(req, res) {
               }
             }
           }
+        
 
           if (combo.totalPrice <= budget && combo.items.length + selectedItems.length >= 2 * people) {
             if (setMenus.length > 0 && itemTypeCounts.setmenu === 0) {
@@ -76,6 +78,7 @@ async function showCombos(req, res) {
             combo.items = combo.items.concat(selectedItems.slice(0, 2 * people - combo.items.length));
             combo.totalPrice += selectedItems.slice(0, 2 * people - combo.items.length).reduce((acc, item) => acc + item.price, 0);
             combos.push(combo);
+            
           }
         }
       }
@@ -92,6 +95,9 @@ async function showCombos(req, res) {
     res.status(500).send('Server error');
   }
 }
+
+
+
 
 
 const reviews = async(req,res) =>{
