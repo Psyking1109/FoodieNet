@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const UserRoute = require('./route/entry')
 const RestaurentProfileRouter = require('./route/restaurantProfile')
 const RestaurentSearchRouter = require('./route/searchRestaurents')
+const Bookings = require('./route/bookingRoute')
 
 
 app.use(express.json())
@@ -17,6 +18,7 @@ app.use((req,res,next)=>{
 app.use('/api/user',UserRoute)
 app.use('/api/restaurentProfile',RestaurentProfileRouter)
 app.use('/api/restaurentSearch',RestaurentSearchRouter)
+app.use('api/bookings',Bookings)
 
 
 mongoose.connect(process.env.MONGO_URI)
