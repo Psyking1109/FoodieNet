@@ -16,7 +16,7 @@ const restaurantProfileRouter = express.Router()
 
 
 // Create Menu
-restaurantProfileRouter.post('/:id/createMenu',CreateMenu)
+restaurantProfileRouter.post('/createMenu',CreateMenu)
 
 //Delete Menu
 restaurantProfileRouter.delete('/:id/deleteMenu',deleteItem)

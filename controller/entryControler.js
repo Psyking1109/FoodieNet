@@ -22,7 +22,7 @@ const registerUser = (req,res) =>{
             await Register.save()
 
             if(user.role == 'Restaurent'){ 
-              const userId = Users.findOne({'emailId':user.emailId})       
+              const userId = await Users.findOne({'emailId':user.emailId})       
               const Restaurant = new Restaurants({
                 userID:userId,
                 contacts:{
@@ -31,6 +31,7 @@ const registerUser = (req,res) =>{
                 restaurentName:user.userName,
               })
               await Restaurant.save()
+              console.log(Restaurant)
             }
 
             const payload = { username: user._id, role: user.role };

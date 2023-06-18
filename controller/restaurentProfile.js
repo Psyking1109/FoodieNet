@@ -1,38 +1,72 @@
 const mongoose = require('mongoose')
 const restaurentData = require('../models/restaurantsData')
+const jwt = require('jsonwebtoken')
 const { json } = require('express')
 
 
-const getUser = async () => {
-    const token = req.headers['authorization'];
-    const decodedToken = jwt.verify(token, 'secretKey');
-    const restaurantId = restaurentData.findOne({ 'userID': decodedToken.username })
-    return restaurantId
-
-}
-
-
-const CreateMenu = async (req, res) => {
-    const { id } = await getUser()
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: "No restaurent" })
+const getUser = async (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader.split(' ')[1]
+    let userName = ''
+    if (!token) {
+        console.log("Not a token")
+      return res.status(401).json({ error: 'Authorization token not provided' });
     }
-    const restaurent = await restaurentData.findById(id)
+    try {
+      jwt.verify(token,'secretKey' ,(err ,data)=>{
+        if(err) console.log(err)
+        if(!data){
+            console.log("There aint no shit in it")
+        }
+        userName = data.username      
+      });                
+      const restaurantId = await restaurentData.findOne({ 'userID': userName });
+      if (!restaurantId) {
+        return res.status(404).json({ error: 'Restaurant not found' });
+      }
+     const restID = restaurantId._id.toString()
+      console.log("rest ID - ",restID)
+      return restID; 
+    } catch (error) {
+      return res.status(401).json({ error: 'Invalid authorization token' });
+    }
+  };
+  
+  
 
-    restaurent.menu.push({
+
+  const CreateMenu = async (req, res) => {
+    try {
+      const id  = await getUser(req, res);
+      console.log("id - ", id)
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: 'No restaurant' });
+      }
+      const restaurent = await restaurentData.findById(id);
+  
+      restaurent.menu.push({
         item: req.body.item,
         price: req.body.price,
         description: req.body.description,
         type: req.body.type,
         serves: req.body.serves
-    })
-    await restaurent.save();
-    res.status(200).json({ message: "Menu item created successfully" })
-    console.log(restaurent.menu)
-}
+      });
+  
+      await restaurent.save();
+      console.log(restaurent.menu);
+  
+      res.status(200).json({ message: 'Menu item created successfully' });
+    } catch (error) {
+      console.error('An error occurred:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  };
+  
+  
+  
 
 const deleteItem = async (req, res) => {
-    const { id } = await getUser()
+    const  id  = await getUser(req, res);
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ error: "No Such Product" })
     }
@@ -44,7 +78,7 @@ const deleteItem = async (req, res) => {
 }
 
 const bookings = async (req, res) => {
-    const { id } = await getUser()
+    const  id  = await getUser(req, res);
     try {
         const restaurent = await restaurentData.findById(id).select('reservations');
         res.status(200).json(restaurent)
@@ -54,7 +88,7 @@ const bookings = async (req, res) => {
 }
 
 const updateProduct = async (req, res) => {
-    const { id } = await getUser()
+    const id  = await getUser(req, res);
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ error: "No such Product" })
     }
@@ -69,7 +103,7 @@ const updateProduct = async (req, res) => {
 
 const Bookingregecting = async (req, res) => {
     const username = req.params
-    const { RestaurantId } = await getUser()
+    const  RestaurantId  = await getUser(req, res);
     if (!mongoose.Types.ObjectId.isValid(RestaurantId)) {
         return res.status(404).json({ error: "No restaurent" })
     }
