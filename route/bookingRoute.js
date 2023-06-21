@@ -5,13 +5,16 @@ const {
     cancelation
 } = require('../controller/restaurentBookings')
 
+const {
+    authenticateUser
+}=require('../controller/entryControler')
 
 const bookingRouter = express.Router();
 
 //Book Restaurent
-bookingRouter.post('/:RestaurantId/bookRestaurant',booking)
+bookingRouter.post('/:RestaurantId/bookRestaurant',authenticateUser(['User']),booking)
 
 //Cancel Reservation
-bookingRouter.patch('/:restaurantId/:reservationId/cancelBooking',cancelation)
+bookingRouter.patch('/:restaurantId/:reservationId/cancelBooking',authenticateUser(['User']),cancelation)
 
 module.exports = bookingRouter

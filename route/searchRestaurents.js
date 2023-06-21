@@ -15,8 +15,8 @@ const searchRouter = express.Router()
 
 
 // Search Restaurents
-searchRouter.get('/searchrestaurant',showCombos)
-searchRouter.post('/comment/:id',reviews)
+searchRouter.get('/searchrestaurant',authenticateUser(['User']),showCombos)
+searchRouter.post('/comment/:id',authenticateUser(['User']),reviews)
 
 
 
