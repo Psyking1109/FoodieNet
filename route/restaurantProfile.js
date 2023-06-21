@@ -25,7 +25,7 @@ restaurantProfileRouter.delete('/:id/deleteMenu',deleteItem)
 restaurantProfileRouter.patch('/:id/deleteMenu',updateProduct)
 
 //Booking Rejection
-restaurantProfileRouter.patch('/:username/rejectBooking',Bookingregecting)
+restaurantProfileRouter.patch('/:reservationId/rejectBooking',Bookingregecting)
 
 //View All bookings
 restaurantProfileRouter.get('/allBookings',bookings)

@@ -3,20 +3,37 @@ const jwt = require('jsonwebtoken');
 const restaurentData = require('../models/restaurantsData')
 
 
-const getUser = async() =>{
-    const token = req.headers['authorization'];
-    const decodedToken = jwt.verify(token, 'secretKey');
-    return decodedToken.username
-}
+const getUser = async (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader.split(' ')[1]
+    let userName = ''
+    if (!token) {
+        console.log("Not a token")
+      return res.status(401).json({ error: 'Authorization token not provided' });
+    }
+    try {
+      jwt.verify(token,'secretKey' ,(err ,data)=>{
+        if(err) console.log(err)
+        if(!data){
+            console.log("There aint no shit in it")
+        }
+        userName = data.username      
+      });                
+      return userName; 
+    } catch (error) {
+      return res.status(401).json({ error: 'Invalid authorization token' });
+    }
+  };
 
 
 const booking = async(req,res) =>{
-    const username = await getUser()
+    const username = await getUser(req,res)
     const {RestaurantId} = req.params
     if(!mongoose.Types.ObjectId.isValid(RestaurantId)){
         return res.status(404).json({error:"No restaurent"})
     }
-    const restaurent = await restaurentData.findById(id)
+    const restaurent = await restaurentData.findById(RestaurantId)
+    console.log("restaurant ",restaurent)
 try{ restaurent.reservations.push({
     customer:username,
     numberofPeople:req.body.numberofPeople,
@@ -24,26 +41,32 @@ try{ restaurent.reservations.push({
     status:'pending'
 })
 await restaurent.save()
+res.status(200).send("Booked Succesfully !!")
 }catch(err){
     res.status(500).send('Server error');
 }  
 }
 
 const cancelation = async(req,res) =>{
-    const username = await getUser()
-    const {RestaurantId} = req.params.id
-    if(!mongoose.Types.ObjectId.isValid(RestaurantId)){
+    //const username = await getUser(req,res)
+    const {reservationId , restaurantId} = req.params
+    if(!mongoose.Types.ObjectId.isValid(restaurantId)){
         return res.status(404).json({error:"No restaurent"})
     }
+    try{
     const restaurant = await restaurentData.findOneAndUpdate(
-        {'reservations.customer':username},
+        {"_id":restaurantId , 'reservations._id':reservationId},
         {$set:{'reservations.$.status':'canceled'} },
         { new: true }
         )
     if(!restaurant){
         return res.status(404).json({error:"No record found"})
     }
-    res.status(202).json(restaurant)
+    await restaurant.save()
+    res.status(202).json("Revervation cancelled !!")
+}catch(err){
+     res.status(500).send('Server error');
+}
 }
 
 

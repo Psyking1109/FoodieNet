@@ -18,7 +18,7 @@ app.use((req,res,next)=>{
 app.use('/api/user',UserRoute)
 app.use('/api/restaurentProfile',RestaurentProfileRouter)
 app.use('/api/restaurentSearch',RestaurentSearchRouter)
-app.use('api/bookings',Bookings)
+app.use('/api/bookings',Bookings)
 
 
 mongoose.connect(process.env.MONGO_URI)

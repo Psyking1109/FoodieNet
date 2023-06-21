@@ -9,9 +9,9 @@ const {
 const bookingRouter = express.Router();
 
 //Book Restaurent
-bookingRouter.post('/:RestaurantId',booking)
+bookingRouter.post('/:RestaurantId/bookRestaurant',booking)
 
 //Cancel Reservation
-bookingRouter.patch('/:RestaurantId',cancelation)
+bookingRouter.patch('/:restaurantId/:reservationId/cancelBooking',cancelation)
 
 module.exports = bookingRouter

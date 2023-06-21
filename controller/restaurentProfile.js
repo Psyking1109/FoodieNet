@@ -21,11 +21,11 @@ const getUser = async (req, res) => {
         userName = data.username      
       });                
       const restaurantId = await restaurentData.findOne({ 'userID': userName });
+      console.log("UserName ",userName)
       if (!restaurantId) {
         return res.status(404).json({ error: 'Restaurant not found' });
       }
-     const restID = restaurantId._id.toString()
-      console.log("rest ID - ",restID)
+      const restID = restaurantId._id.toString()
       return restID; 
     } catch (error) {
       return res.status(401).json({ error: 'Invalid authorization token' });
@@ -102,20 +102,29 @@ const updateProduct = async (req, res) => {
 }
 
 const Bookingregecting = async (req, res) => {
-    const username = req.params
-    const  RestaurantId  = await getUser(req, res);
-    if (!mongoose.Types.ObjectId.isValid(RestaurantId)) {
+    const {reservationId} = req.params
+    const  restaurantId  = await getUser(req, res);
+    console.log("reservation ID ",reservationId)
+    if (!mongoose.Types.ObjectId.isValid(restaurantId)) {
         return res.status(404).json({ error: "No restaurent" })
     }
+    if(!mongoose.Types.ObjectId.isValid(reservationId)){
+      return res.status(404).json({ error: "Invalid Reservation ID" })
+    }
+    try{
     const restaurant = await restaurentData.findOneAndUpdate(
-        { 'reservations.customer': username },
-        { $set: { 'reservations.$.status': 'rejected' } },
-        { new: true }
-    )
+      {"_id":restaurantId , 'reservations._id':reservationId.toString()},
+      {$set:{'reservations.$.status':'rejected'} },
+      { new: true }
+      )
     if (!restaurant) {
         return res.status(404).json({ error: "No record found" })
     }
     res.status(202).json(restaurant)
+  }catch(err){
+    console.log(err)
+    res.status(500).json({err:"server error"})
+  }
 }
 
 module.exports = {

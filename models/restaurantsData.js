@@ -59,11 +59,12 @@ const RestaurentSchema = new Schema({
             type:Number
         },
         reservationDate:{
-            type:Date
+            type:Date,
+            
         },
         status:{
             type:String,
-            emun:['copmleted','canceled','pending','rejected']
+            enum:['completed','canceled','pending','rejected']
         }
     }],
 
